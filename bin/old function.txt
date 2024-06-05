@@ -1,0 +1,100 @@
+ public  char[][] getFlag (int height,int width){
+        char[][] flag=emptyCharArrey(height,width);
+        
+        int horizontal= height/10>1?height/10:1;
+        for (int i = 0; i < horizontal; i++) {
+            for (int j = 0; j < width; j++) {
+                flag[i][j]=flag[height-1-i][j]='*';
+            }
+        }
+        int magenDavidSize=height>width?width/4:height/4;
+        int leftArea=height-2*horizontal;
+        int start=horizontal+(leftArea-magenDavidSize)/2;
+        char[][] magen_David=getSymbol(magenDavidSize);
+        int flagCenter=(Math.ceilDiv(width, 2)-1)-magenDavidSize/2;
+        flagCenter=flagCenter%2==0?flagCenter+1:flagCenter;
+        
+        for (int i = start,j=0; j < magen_David.length; i++,j++) {
+           System.arraycopy(magen_David[j], 0, flag[i], flagCenter, magen_David[j].length);
+        }
+   
+        return flag;
+    }
+
+     private void insertZionetSymbol(char[][] symbol,int size){
+        int up =0,down=0,i=0;
+        for (; i < symbol.length; i++) {
+            if(symbol[i][0]=='*'){
+                up=i;
+                break;
+            }
+        }
+        i++;
+        for (; i < symbol.length; i++) {
+            if(symbol[i][0]=='*'){
+                down=i;
+                break;
+            }
+        }
+        //Z
+        int distance=down-up;
+        for (int j = up,next=size-1; j <= down; j++,next--) {
+           if(j==up||j==down){
+            for (int k = size-1; k >=size-1- distance; k--) {
+                symbol[j][k]='O';
+                }
+            }
+            else{
+                symbol[j][next]='O';
+            }
+            
+        }
+        //צ
+        for (int j = up,next=0; j <= down; j++,next++) {
+            if(j==up){
+                symbol[j][next]=symbol[j][distance]='O';
+            }
+            else if(j==down){
+                for (int k = 0;k<= distance; k++) {
+                    symbol[j][k]='O';
+                    }
+            }
+             else{
+                 symbol[j][next]='O';
+                 if(distance-next>distance/2)
+                    symbol[j][distance-next]='O';
+             }
+             
+         }
+        
+    }
+
+     public  char[][] getSymbol(int size){
+        size+=size%2==0?1:0;
+        int upLowerTriangle=(int)Math.round(size*0.35);
+        char[][] magen_david= new char[size-upLowerTriangle][size];
+       
+        int center=Math.ceilDiv(size, 2)-1; 
+         for(int i =0;center>=i;i++){
+            for(int j =center;j>=0;j--){
+                magen_david[i][center+j]=magen_david[i][center-j]=(j==i||i==center)?'*':' ';
+               
+            }
+         
+        }
+        
+        for(int i =size-1-upLowerTriangle;i>=center-upLowerTriangle;i--){
+            for(int j =center;j>=0;j--){
+                if((j==(size-1-i-upLowerTriangle)||i==center-upLowerTriangle)){
+                magen_david[i][center+j]=magen_david[i][center-j]='*';
+                }
+                else if (magen_david[i][center+j]!='*') {
+                   magen_david[i][center+j]=magen_david[i][center-j]=' ';
+                }
+            }
+         
+        }
+
+        insertZionetSymbol(magen_david, size);
+        return magen_david;
+    }
